@@ -21,7 +21,9 @@ import javax.inject.Inject;
 public class SchedulerConfigurator {
 
     private static final String JOB_NAME = "birthDateScheduler";
+    private static final String TRAINERS_DAILY_PROMO_JOB_NAME = "trainerPromoCodeScheduler";
     private static final String TRIGGER_NAME = "birthDateTrigger";
+    private static final String TRAINERS_DAILY_PROMO_TRIGGER_NAME = "trainersDailyPromoTrigger";
 
     private final Logger log = Logger.getLogger(getClass());
 
@@ -36,7 +38,8 @@ public class SchedulerConfigurator {
             JobDetail jobDetail = JobBuilder.newJob(BirthDateScheduler.class)
                     .withIdentity(JOB_NAME).build();
 
-            log.info("Creating daily trigger");
+            JobDetail trainersDailyPromoCodeJobDetail = JobBuilder.newJob(TrainerPromoCodeScheduler.class)
+                    .withIdentity(TRAINERS_DAILY_PROMO_JOB_NAME).build();
             //create a new trigger
             Trigger trigger = TriggerBuilder.newTrigger()
                     .withIdentity(TRIGGER_NAME)
@@ -44,10 +47,17 @@ public class SchedulerConfigurator {
                     .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(0, 0))
                     .forJob(JOB_NAME).build();
 
+            Trigger trainerDailyPromoTrigger = TriggerBuilder.newTrigger()
+                    .withIdentity(TRAINERS_DAILY_PROMO_TRIGGER_NAME)
+                    .withPriority(Trigger.DEFAULT_PRIORITY)
+                    .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(0, 0))
+                    .forJob(TRAINERS_DAILY_PROMO_JOB_NAME).build();
+
             Scheduler scheduler = new StdSchedulerFactory().getScheduler();
             scheduler.setJobFactory(cdiJobFactory);
             scheduler.start();
             scheduler.scheduleJob(jobDetail, trigger);
+            scheduler.scheduleJob(trainersDailyPromoCodeJobDetail, trainerDailyPromoTrigger);
             log.info("Started scheduler");
         } catch (SchedulerException ex) {
             log.error("Could not create scheduler", ex);

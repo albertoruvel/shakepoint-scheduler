@@ -9,9 +9,9 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class UserBirthDateObserver {
+public class SchedulerObserver {
 
-    private static final String QUEUE_NAME = "birthdate_promocode";
+    private static final String BIRTHDATE_QUEUE_NAME = "birthdate_promocode";
     private final Logger log = Logger.getLogger(getClass());
 
     @Inject
@@ -20,7 +20,7 @@ public class UserBirthDateObserver {
     public void onUserBirthDate(@Observes UserProfile userProfile) {
         try {
             log.info("Will send notification for user birth day");
-            jmsHandler.send(QUEUE_NAME, userProfile.getUserId());
+            jmsHandler.send(BIRTHDATE_QUEUE_NAME, userProfile.getUserId());
         } catch (Exception ex) {
             log.error("Could not send birthdate jms message", ex);
         }

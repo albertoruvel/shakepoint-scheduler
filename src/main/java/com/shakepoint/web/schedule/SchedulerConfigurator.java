@@ -50,7 +50,8 @@ public class SchedulerConfigurator {
             Trigger trainerDailyPromoTrigger = TriggerBuilder.newTrigger()
                     .withIdentity(TRAINERS_DAILY_PROMO_TRIGGER_NAME)
                     .withPriority(Trigger.DEFAULT_PRIORITY)
-                    .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(0, 0))
+                    //.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(0, 0))
+                    .withSchedule(CronScheduleBuilder.cronSchedule("0 0/1 * * * ?"))
                     .forJob(TRAINERS_DAILY_PROMO_JOB_NAME).build();
 
             Scheduler scheduler = new StdSchedulerFactory().getScheduler();
